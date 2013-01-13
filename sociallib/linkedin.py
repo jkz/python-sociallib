@@ -20,7 +20,7 @@ class Auth(oauth.Auth):
         return super(Auth, self).__call__(method, uri, body, headers)
 
 
-class OAuth(oauth.API):
+class OAuth(oauth.Provider):
     secure = True
     host = 'api.linkedin.com'
     request_token_path = '/uas/oauth/requestToken'
@@ -51,4 +51,10 @@ class API(callm.Connection):
         path = ''.join(('/v1/people/', tail, field_selector))
         headers = {'x-li-format': 'json'}
         return self.GET(path, headers=headers).json
+
+
+class App(oauth.App):
+    API = API
+    Auth = Auth
+    OAuth = OAuth
 

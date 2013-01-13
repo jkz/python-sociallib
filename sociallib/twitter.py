@@ -10,7 +10,7 @@ class Error(Exception):
     pass
 
 
-class OAuth(oauth.API):
+class OAuth(oauth.Provider):
     host = 'api.twitter.com'
     request_token_path = '/oauth/request_token'
     access_token_path = '/oauth/access_token'
@@ -39,7 +39,7 @@ class API(callm.Connection):
             params['screen_name'] = uid
         else:
             params['user_id'] = uid
-        return self.GET('/1/users/show.json' **params)
+        return self.GET('/1/users/show.json', **params)
 
 
 class Stream(callm.Stream):
@@ -155,3 +155,6 @@ class SiteStream(Stream):
     def __call__(self, **params):
         return self.stream.GET('/2b/site.json', **params)
 
+class App(oauth.App):
+    API = API
+    OAuth = OAuth

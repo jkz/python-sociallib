@@ -23,7 +23,7 @@ class Auth(oauth.Auth):
         return super(Auth, self).__call__(method, uri, body, headers)
 
 
-class OAuth(oauth.API):
+class OAuth(oauth.Provider):
     host = 'www.tumblr.com'
     request_token_path = '/oauth/request_token'
     access_token_path = '/oauth/access_token'
@@ -68,3 +68,10 @@ class API(callm.Connection):
 
     def get_tagged(self, tag):
         return self.GET('/v2/tagged', tag=tag).json
+
+
+class App(oauth.App):
+    API = API
+    Auth = Auth
+    OAuth = OAuth
+

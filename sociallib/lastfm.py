@@ -167,8 +167,8 @@ class API(callm.Connection):
         They are valid for 60 minutes from the moment they are granted.
         """
         xml = self.get_session(token, **kwargs).xml
-        key =  xml.getElementsByTagName('key')[0].firstChild.data
-        return self.auth.app.process_creds(key=key)
+        key = xml.getElementsByTagName('key')[0].firstChild.data
+        return {'key': key}
 
     def get_session(self, token, **kwargs):
         """
@@ -258,13 +258,7 @@ class App(interface.App):
 
     def authenticate(self, session_token):
         """
-        -> uid
-        """
-        raise NotImplementedError
-
-    def process_creds(**creds):
-        """
-        -> access_token
+        Return a user object
         """
         raise NotImplementedError
 

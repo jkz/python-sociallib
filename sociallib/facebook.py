@@ -23,30 +23,26 @@ class Auth(authlib.Auth):
         resource = callm.Resource(uri)
 
         if self.token:
-            resource.query['access_token'] = self.token.access_token
+            resource.query['access_token'] = self.token.key
         elif self.app:
             resource.query['client_id'] = self.app.key
 
         return method, resource.uri, body, headers
 
 
-class OAuth2(oauth2.API):
+class OAuth2(oauth2.Provider):
     secure = True
     host = 'graph.facebook.com'
     exchange_code_url = '/oauth/access_token'
     authenticate_uri = 'https://www.facebook.com/dialog/oauth'
 
-    def auth_request(self, redirect_uri, state):
-        return self.request_code(redirect_uri, state=state)
-
-    def auth_callback(self, code, redirect_uri):
-        response = self.exchange_code(code, redirect_uri)
+    def exchange_code(self, code, redirect_uri):
+        response = super(OAuth2, self).exchange_code(code, redirect_uri)
         try:
-            creds = response.query
+            return response.query
         except ValueError:
             error = response.json
-            raise Exception(error['type'] + error['message'])
-        return self.auth.app.process_creds(**creds)
+            raise Error(error['type'] + error['message'])
 
 
 class API(callm.Connection):
@@ -69,3 +65,7 @@ class API(callm.Connection):
     def me(self):
         return self.get_user('me')
 
+class App(oauth2.App):
+    API = API
+    Auth = Auth
+    OAuth2 = OAuth2
