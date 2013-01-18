@@ -31,8 +31,9 @@ class OAuth2(oauth2.Provider):
     authenticate_uri = 'https://soundcloud.com/connect'
 
     #XXX: This could be accomplishable by a 'format' attribute
-    def exchange_code(self, code, redirect_uri):
-        return super(OAuth2, self).exchange_code(code, redirect_uri).json
+    def exchange_code(self, code, redirect_uri, grant_type):
+        return super(OAuth2, self).exchange_code(code, redirect_uri,
+                grant_type=grant_type).json
 
 
 class API(callm.Connection):

@@ -48,8 +48,8 @@ class Stream(callm.Stream):
 
     _delimiter = 'length'
 
-    def __init__(self, auth):
-        self.auth = auth
+    def __init__(self, auth, listener=None):
+        super(Stream, self).__init__(auth=auth, listener=listener)
 
     def read_loop_iter(self):
         # Note: keep-alive newlines might be inserted before each length value.
@@ -101,6 +101,7 @@ class StatusStream(Stream):
             stall_warning='true')
     @encode_list_params('track', 'locations', 'follow')
     def filter(self, **params):
+        params['headers'] = {'Content-Type': 'application/x-www-form-urlencoded'}
         return self.POST('/1.1/statuses/filter.json', **params)
 
     @default_kwargs(
