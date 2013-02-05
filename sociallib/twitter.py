@@ -41,6 +41,24 @@ class API(callm.Connection):
             params['user_id'] = uid
         return self.GET('/1/users/show.json', **params)
 
+    @default_kwargs(
+            trim_user=True,
+            exclude_replies=True,
+            contributor_details=False,
+            include_rts=True)
+    def get_timeline(self, uid, max_id=None, since_id=None, **params):
+        try:
+            int(uid)
+        except ValueError:
+            params['screen_name'] = uid
+        else:
+            params['user_id'] = uid
+        if max_id is not None:
+            params['max_id'] = max_id
+        if since_id is not None:
+            params['since_id'] = since_id
+        return self.GET('/1.1/statuses/user_timeline.json', **params)
+
 
 class Stream(callm.Stream):
     secure = True
