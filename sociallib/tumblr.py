@@ -18,12 +18,12 @@ class Auth(oauth.Auth):
             or path.endswith('/posts')
             or path.endswith('/posts/text')
             or path.endswith('/posts/photo')))):
-                resource.query['api_key'] = self.app.key
+                resource.query['api_key'] = self.consumer.key
                 return method, resource.uri, body, headers
         return super(Auth, self).__call__(method, uri, body, headers)
 
 
-class OAuth(oauth.Provider):
+class Provider(oauth.Provider):
     host = 'www.tumblr.com'
     request_token_path = '/oauth/request_token'
     access_token_path = '/oauth/access_token'
@@ -70,8 +70,16 @@ class API(callm.Connection):
         return self.GET('/v2/tagged', tag=tag).json
 
 
-class App(oauth.App):
-    API = API
+class ConsumerInterface(oauth.ConsumerInterface):
     Auth = Auth
-    OAuth = OAuth
+    API = API
+    Provider = Provider
 
+
+class Consumer(oauth.Consumer):
+    Auth = Auth
+    API = API
+    Provider = Provider
+
+class TokenInterface(oauth.TokenInterface): pass
+class Token(oauth.Token): pass

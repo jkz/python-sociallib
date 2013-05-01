@@ -51,8 +51,8 @@ class Error(Exception):
     pass
 
 class Auth(interface.Auth):
-    def __init__(self, app, token=None, **options):
-        self.app = app
+    def __init__(self, consumer, token=None, **options):
+        self.consumer = consumer
         self.token = token
         self.options = options
 
@@ -73,7 +73,7 @@ class Auth(interface.Auth):
                 explained in Section 6
         """
         resource = callm.Resource(uri)
-        resource.query['api_key'] = self.app.api_key
+        resource.query['api_key'] = self.consumer.key
         if self.token:
             resource.query['sk'] = self.token.key
         resource.query.update(self.options)
@@ -103,7 +103,7 @@ class Auth(interface.Auth):
         32-character hexadecimal md5 hash.
         """
         param = ''.join('%s%s' % (k, v) for k, v in sorted(query.iteritems()))
-        param += self.app.secret
+        param += self.consumer.secret
         param = param.encode('utf-8')
         md5 = hashlib.md5()
         md5.update(param)
@@ -249,23 +249,36 @@ class API(callm.Connection):
                 track=track, artist=artist, **params).json
 
 
-class App(interface.App):
-    api_key = None
+class ConsumerInterface(interface.Consumer):
+    key = None
     secret = None
 
     API = API
     Auth = Auth
 
-    def authenticate(self, session_token):
+    def auth_process(self, session_token):
         """
         Return a user object
         """
         raise NotImplementedError
 
     def __unicode__(self):
-        return 'lastfm.App(%s)' % self.api_key
+        return 'lastfm.App(%s)' % self.key
 
 
-class Token(interface.Token):
+class TokenInterface(interface.Token):
     key = None
+    consumer = None
+
+
+class Consumer(ConsumerInterface):
+    def __init__(self, key, secret):
+        self.key = key
+        self.secret = secret
+
+
+class Token(TokenInterface):
+    def __init__(self, key, consumer=None):
+        self.key = key
+        self.consumer = consumer
 

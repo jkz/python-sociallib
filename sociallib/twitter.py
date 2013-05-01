@@ -10,7 +10,7 @@ class Error(Exception):
     pass
 
 
-class OAuth(oauth.Provider):
+class Provider(oauth.Provider):
     host = 'api.twitter.com'
     request_token_path = '/oauth/request_token'
     access_token_path = '/oauth/access_token'
@@ -104,7 +104,6 @@ def encode_list_params(*list_names):
                 val = params.get(key, None)
                 if val is not None:
                     params[key] = ','.join(map(str, val))
-                    print 'ENCODE', val, 'to', params[key]
             return func(*args, **params)
         return funk
     return decorator
@@ -174,6 +173,16 @@ class SiteStream(Stream):
     def __call__(self, **params):
         return self.stream.GET('/2b/site.json', **params)
 
-class App(oauth.App):
+
+class ConsumerInterface(oauth.ConsumerInteface):
+    Provider = Provider
     API = API
-    OAuth = OAuth
+
+
+class Consumer(oauth.Consumer):
+    Provider = Provider
+    API = API
+
+
+class TokenInterface(oauth.TokenInterface): pass
+class Token(oauth.Token): pass

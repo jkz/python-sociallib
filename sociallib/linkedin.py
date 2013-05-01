@@ -15,12 +15,12 @@ class Auth(oauth.Auth):
             or path.endswith('/posts')
             or path.endswith('/posts/text')
             or path.endswith('/posts/photo')))):
-                resource.query['api_key'] = self.app.key
+                resource.query['api_key'] = self.consumer.key
                 return method, resource.uri, body, headers
         return super(Auth, self).__call__(method, uri, body, headers)
 
 
-class OAuth(oauth.Provider):
+class Provider(oauth.Provider):
     secure = True
     host = 'api.linkedin.com'
     request_token_path = '/uas/oauth/requestToken'
@@ -53,8 +53,16 @@ class API(callm.Connection):
         return self.GET(path, headers=headers).json
 
 
-class App(oauth.App):
-    API = API
+class ConsumerInterface(oauth.ConsumerInterface):
     Auth = Auth
-    OAuth = OAuth
+    API = API
+    Provider = Provider
 
+
+class Consumer(oauth.Consumer):
+    Auth = Auth
+    API = API
+    Provider = Provider
+
+class TokenInterface(oauth.TokenInterface): pass
+class Token(oauth.Token): pass

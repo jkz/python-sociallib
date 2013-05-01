@@ -19,12 +19,12 @@ class Auth(oauth2.Auth):
 
         if self.token:
             resource.query['oauth_token'] = self.token.key
-        elif self.app:
-            resource.query['client_id'] = self.app.key
+        elif self.consumer:
+            resource.query['client_id'] = self.consumer.key
 
         return method, resource.uri, body, headers
 
-class OAuth2(oauth2.Provider):
+class Provider(oauth2.Provider):
     secure = True
     host = 'api.soundcloud.com'
     exchange_code_url = '/oauth2/token'
@@ -32,7 +32,7 @@ class OAuth2(oauth2.Provider):
 
     #XXX: This could be accomplishable by a 'format' attribute
     def exchange_code(self, code, redirect_uri, grant_type):
-        return super(OAuth2, self).exchange_code(code, redirect_uri,
+        return super(Provider, self).exchange_code(code, redirect_uri,
                 grant_type=grant_type).json
 
 
@@ -48,6 +48,9 @@ class API(callm.Connection):
     def get_my_tracks(self):
         return self.GET('/me/tracks.json')
 
+    def get_my_own_activities(self):
+        return self.GET('/me/activities/all/own.json')
+
     def get_user(self, uid):
         return self.GET('/users/%s.json' % uid)
 
@@ -58,8 +61,16 @@ class API(callm.Connection):
         return self.GET('/tracks/%s.json' % uid)
 
 
-class App(oauth2.App):
+class ConsumerInterface(oauth2.ConsumerInterface):
     API = API
     Auth = Auth
-    OAuth2 = OAuth2
+    Provider = Provider
 
+
+class Consumer(oauth2.Consumer):
+    API = API
+    Auth = Auth
+    Provider = Provider
+
+class TokenInterface(oauth2.TokenInterface): pass
+class Token(oauth2.Token): pass
