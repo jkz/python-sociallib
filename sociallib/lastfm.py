@@ -109,8 +109,6 @@ class Auth(interface.Auth):
         md5.update(param)
         return md5.hexdigest()
 
-
-
 class API(callm.Connection):
     host = 'ws.audioscrobbler.com'
     secure = False
@@ -141,7 +139,7 @@ class API(callm.Connection):
             http://www.last.fm/api/auth/?api_key=xxx&cb=http://example.com
         """
         return callm.URL(self.auth_uri, verbatim=False,
-                api_key=self.auth.app.api_key, cb=redirect_uri, **kwargs)
+                api_key=self.auth.consumer.key, cb=redirect_uri, **kwargs)
 
     def auth_callback(self, token, **kwargs):
         """
@@ -196,6 +194,7 @@ class API(callm.Connection):
         invalid.
         """
         return self.GET('/2.0/', method='auth.getSession', token=token, **kwargs)
+
 
     def get_user(self, user=None, **params):
         """
@@ -253,7 +252,7 @@ class ConsumerInterface(interface.Consumer):
     key = None
     secret = None
 
-    API = API
+    Provider = API = API
     Auth = Auth
 
     def auth_process(self, session_token):

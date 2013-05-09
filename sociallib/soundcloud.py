@@ -30,7 +30,9 @@ class Provider(oauth2.Provider):
     exchange_code_url = '/oauth2/token'
     authenticate_uri = 'https://soundcloud.com/connect'
 
+
     #XXX: This could be accomplishable by a 'format' attribute
+    #format = 'json'
     def exchange_code(self, code, redirect_uri, grant_type):
         return super(Provider, self).exchange_code(code, redirect_uri,
                 grant_type=grant_type).json

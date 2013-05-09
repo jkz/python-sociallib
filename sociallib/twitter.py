@@ -174,7 +174,7 @@ class SiteStream(Stream):
         return self.stream.GET('/2b/site.json', **params)
 
 
-class ConsumerInterface(oauth.ConsumerInteface):
+class ConsumerInterface(oauth.ConsumerInterface):
     Provider = Provider
     API = API
 

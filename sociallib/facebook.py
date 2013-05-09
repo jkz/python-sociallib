@@ -1,12 +1,11 @@
 import callm
-import authlib
 import authlib.oauth2 as oauth2
 
 class Error(Exception): pass
 class ParseError(Error): pass
 
 
-class Auth(authlib.Auth):
+class Auth(oauth2.Auth):
     def __call__(self, method, uri, body='', headers={}):
         """
         Add a token or id parameter to the query string.
@@ -20,7 +19,7 @@ class Auth(authlib.Auth):
 
         if self.token:
             resource.query['access_token'] = self.token.key
-        elif self.app:
+        elif self.consumer:
             resource.query['client_id'] = self.consumer.key
 
         return method, resource.uri, body, headers
